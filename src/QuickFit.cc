@@ -33,6 +33,7 @@
 #include "QuickFit.hh"
 #include "PlotFormat.hh"
 #include "currentPath.hh"
+#include <string>
 // #include "/besfs/users/maxx/home/head/bes3plotstyle_1.C"
 using namespace RooFit;
 using std::cout;
@@ -388,7 +389,7 @@ void QuickFit::GenerateCxx(RooWorkspace *_wspace, RooPlot* frame) {
     system("sed -i 's/output.root/" + m_output + "/g' " + outcxx);
     cout << "sed -i 's/SigPdfName/" + m_sigpdfName + "/g' " + outcxx << endl;
     
-    system("sed -i 's/vap/" + m_branch + "/g' " + outcxx);
+    system("sed -i 's/val/" + m_branch + "/g' " + outcxx);
     system("sed -i 's/m_sigpdfName/" + m_sigpdfName + "/g' " + outcxx);
     system("sed -i 's/m_sigpdfName/" + m_sigpdfName + "/g' " + outcxx);
     if (m_bkgShape == "None") {

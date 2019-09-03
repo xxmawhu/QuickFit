@@ -23,7 +23,7 @@ void fit(
     fit.SetBackgroundPDF("None");
     max(inputFile, xLow, xHigh);
     fit.SetFitRange(xLow, xHigh);
-    fit.SetSignalArea(-30, 30);
+    fit.SetSignalArea(-3, 3);
     fit.SetUnit("None");
     fit.SetBins(40);
     fit.SetFigureName(figName);
