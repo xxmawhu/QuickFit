@@ -1,3 +1,13 @@
+/* ====================================================
+#   Copyright (C)2019 All rights reserved.
+#
+#   Author        : Xin-Xin MA
+#   Email         : xxmawhu@163.com
+#   File Name     : QuickFit.hh
+#   Last Modified : 2019-10-10 09:57
+#   Describe      :
+#
+# ====================================================*/
 #ifndef QuickFit_H 
 #define QuickFit_H
 

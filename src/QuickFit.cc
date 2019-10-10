@@ -1,4 +1,13 @@
-// Copyright (c) 2019-2-25 maxx
+/* ====================================================
+#   Copyright (C)2019 All rights reserved.
+#
+#   Author        : Xin-Xin MA
+#   Email         : xxmawhu@163.com
+#   File Name     : QuickFit.cc
+#   Last Modified : 2019-10-10 09:56
+#   Describe      :
+#
+# ====================================================*/
 #ifndef __CINT__
 //#include "RooGlobalFunc.h"
 #endif
@@ -55,6 +64,7 @@ QuickFit::QuickFit(TString file, TString tree, TString leaf) {
     m_output = "out.root";
     _result = new RooFitResult();
 }
+
 QuickFit::~QuickFit() {
     delete _result;
 }
@@ -384,11 +394,11 @@ void QuickFit::GenerateCxx(RooWorkspace *_wspace, RooPlot* frame) {
     TString com1 = "cat ";
     com1 += QuickPath"/test/plot_test.cxx >" + outcxx;
     system(com1);
-    cout << com1 << endl;
+    // cout << com1 << endl;
     system("sed -i 's/SigPdfName/" + m_sigpdfName + "/g' " + outcxx);
     system("sed -i 's/output.root/" + m_output + "/g' " + outcxx);
-    cout << "sed -i 's/SigPdfName/" + m_sigpdfName + "/g' " + outcxx << endl;
-    
+    // cout << "sed -i 's/SigPdfName/" + m_sigpdfName + "/g' " + outcxx << endl;
+
     system("sed -i 's/val/" + m_branch + "/g' " + outcxx);
     system("sed -i 's/m_sigpdfName/" + m_sigpdfName + "/g' " + outcxx);
     system("sed -i 's/m_sigpdfName/" + m_sigpdfName + "/g' " + outcxx);
@@ -402,23 +412,23 @@ void QuickFit::GenerateCxx(RooWorkspace *_wspace, RooPlot* frame) {
     // system("sed -i 's/ndf/" + to_string(ndf) + "/g' " + outcxx);
     // cout << "sed -i 's/chisq/" + to_string(chisq) + "/g' " + outcxx << endl;
     // cout << "sed -i 's/ndf/" + to_string(ndf) + "/g' " + outcxx << endl;
-    
+
     double mean[2], sigma[2];
     getSigmaAndMean(_wspace, mean, sigma);
     system("sed -i 's/m_meanErr/" + to_string(mean[1]) + "/g' " + outcxx);
     system("sed -i 's/m_sigmaErr/" + to_string(sigma[1]) + "/g' " + outcxx);
     system("sed -i 's/m_mean/" + to_string(mean[0]) + "/g' " + outcxx);
     system("sed -i 's/m_sigma/" + to_string(sigma[0]) + "/g' " + outcxx);
-    cout << "sed -i 's/m_meanErr/" + to_string(mean[1]) + "/g' " + outcxx << endl;
-    cout << "sed -i 's/m_sigmaErr/" + to_string(sigma[1]) + "/g' " + outcxx << endl;
-    cout << "sed -i 's/m_mean/" + to_string(mean[0]) + "/g' " + outcxx << endl;
-    cout << "sed -i 's/m_sigma/" + to_string(sigma[0]) + "/g' " + outcxx << endl;
-    
-    cout << "Signal region: [ " << x_low << " , " << x_high << " ]" << endl;
+    // cout << "sed -i 's/m_meanErr/" + to_string(mean[1]) + "/g' " + outcxx << endl;
+    // cout << "sed -i 's/m_sigmaErr/" + to_string(sigma[1]) + "/g' " + outcxx << endl;
+    // cout << "sed -i 's/m_mean/" + to_string(mean[0]) + "/g' " + outcxx << endl;
+    // cout << "sed -i 's/m_sigma/" + to_string(sigma[0]) + "/g' " + outcxx << endl;
+
+    // cout << "Signal region: [ " << x_low << " , " << x_high << " ]" << endl;
     system("sed -i 's/m_unit/" + m_unit + "/g' " + outcxx);
-    cout << "sed -i 's/m_unit/" + m_unit + "/g' " + outcxx << endl;
+    // cout << "sed -i 's/m_unit/" + m_unit + "/g' " + outcxx << endl;
     system("sed -i 's/cname/c" + m_sigpdfName + "/g' " + outcxx);
-    cout << "sed -i 's/cname/c" + m_sigpdfName + "/g' " + outcxx << endl;
+    // cout << "sed -i 's/cname/c" + m_sigpdfName + "/g' " + outcxx << endl;
     return;
 }
 
