@@ -1,4 +1,4 @@
- ########################################################################## 
+ ##########################################################################
  # Copyright University of Warwick 2004 - 2013.                           #
  # Distributed under the Boost Software License, Version 1.0.             #
  # (See accompanying file LICENSE_1_0.txt or copy at                      #
@@ -27,7 +27,7 @@
  #   shlib - make libLaura++.so (default)                                 #
  #   clean - delete all intermediate and final build objects              #
  #                                                                        #
- ########################################################################## 
+ ##########################################################################
 
 
 # --- External configuration ----------------------------------
@@ -38,7 +38,7 @@ ifndef ROOTSYS
   ROOTBINDIR := $(shell root-config --bindir)
   ifeq ($(ROOTSYS), )
     $(error running of root-config failed or reported null value)
-  endif 
+  endif
 else
   ROOTBINDIR := $(ROOTSYS)/bin
 endif
@@ -47,8 +47,9 @@ ROOTCONFIG  := $(ROOTBINDIR)/root-config
 ARCH        := $(shell $(ROOTCONFIG) --arch)
 PLATFORM    := $(shell $(ROOTCONFIG) --platform)
 ROOTVERSION := $(shell $(ROOTCONFIG) --version | awk -F. '{print $$1}')
+ROOTLIBD    := $(shell $(ROOTCONFIG) --libdir)
 
-INCLUDES = 
+INCLUDES =
 SRCDIR   = src
 INCDIR   = inc
 LIBDIR   = lib
@@ -93,10 +94,13 @@ SHLIBFILE = $(LIBDIR)/lib$(PACKAGE).so
 ROOTMAPFILE = $(patsubst %.so,%.rootmap,$(SHLIBFILE))
 
 ROOTLIBS = libCore.so libEG.so libHist.so libMathCore.so libMatrix.so libNet.so libRIO.so libTree.so
+SHLIBOPTS = -ldl -Wl,--as-needed,-L$(ROOTLIBD),-lCore,-lEG,-lHist,-lMathCore,-lMatrix,-lNet,-lRIO,-lTree
+SHLIBOPTS += -lRooFitCore -lRooFit -lGpad
 DEFINES =
 ifeq ($(strip $(SKIPLIST)),)
 	ROOTLIBS += libRooFitCore.so libRooFit.so
 	DEFINES += -DDOLAUROOFITSLAVE
+	SHLIBOPTS += -lRooFitCore -lRooFit
 endif
 
 default: shlib
@@ -147,14 +151,14 @@ $(LIBFILE): $(OLIST) $(CINTOBJ)
 	@echo "Making $(LIBFILE)"
 	@mkdir -p $(LIBDIR)
 	@rm -f $(LIBFILE)
-	@ar rcs $(LIBFILE) $(OLIST) $(CINTOBJ) 
+	@ar rcs $(LIBFILE) $(OLIST) $(CINTOBJ)
 
 # Rule to combine objects into a shared library
 $(SHLIBFILE): $(OLIST) $(CINTOBJ)
 	@echo "Making $(SHLIBFILE)"
 	@mkdir -p $(LIBDIR)
 	@rm -f $(SHLIBFILE)
-	@$(CXX) $(OLIST) $(CINTOBJ) $(LDFLAGS) -o $(SHLIBFILE)
+	@$(CXX) $(OLIST) $(CINTOBJ) $(LDFLAGS) $(SHLIBOPTS) -o $(SHLIBFILE)
 
 ifeq ($(ROOTVERSION),5)
 # Rule to create rootmap file
@@ -166,7 +170,7 @@ $(ROOTMAPFILE): $(SHLIBFILE)
 endif
 
 # Useful build targets
-lib: $(LIBFILE) 
+lib: $(LIBFILE)
 
 ifeq ($(ROOTVERSION),5)
 shlib: $(SHLIBFILE) $(ROOTMAPFILE)
