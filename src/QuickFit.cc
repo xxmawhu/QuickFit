@@ -43,7 +43,6 @@
 #include "PlotFormat.hh"
 #include "currentPath.hh"
 #include <string>
-// #include "/besfs/users/maxx/home/head/bes3plotstyle_1.C"
 using namespace RooFit;
 using std::cout;
 using std::endl;
@@ -271,7 +270,7 @@ void QuickFit::Fit(RooWorkspace *_wspace) {
         _result = model->fitTo(*data, Save(kTRUE),  Extended(kTRUE));
         _result->Print();
         for (int i = 0; i < 1E2; i++) {
-            double edm = _result->edm();
+            // double edm = _result->edm();
             cout << "Inf: fit " << i << " times" << endl << i << " times" << endl;
             _result->randomizePars();
             int covQual = _result->covQual();
@@ -290,7 +289,7 @@ void QuickFit::Fit(RooWorkspace *_wspace) {
         RooDataHist *data = (RooDataHist*)_wspace->data("data");
         for (int i = 0; i < 1E2; i++) {
             _result = model->fitTo(*data, Save(kTRUE),  Extended());
-            double edm = _result->edm();
+            // double edm = _result->edm();
             _result->randomizePars();
             int covQual = _result->covQual();
             int status = _result->status();
@@ -356,12 +355,11 @@ void QuickFit::MakePlots(RooWorkspace *_wspace) {
 
     // plot Components
     if (m_bkgShape != "None") {
-       model->plotOn(frame,
+        model->plotOn(frame,
                Components(m_sigpdfName),
                LineColor(kRed),
                 LineWidth(2),
                LineStyle(kDashed) );
-
         model->plotOn(frame,
                 Components("bkgpdf"),
                 LineColor(kGreen),
@@ -370,7 +368,7 @@ void QuickFit::MakePlots(RooWorkspace *_wspace) {
     }
 
     frame->SetMaximum(frame->GetMaximum()/0.74);
-    frame->SetMinimum(0.0001);
+    frame->SetMinimum(1e-6*frame->GetMaximum());
     PlotTitle(_wspace, frame);
 
     TCanvas *c1 = new TCanvas("c1", "c1", 800, 600);
@@ -378,7 +376,7 @@ void QuickFit::MakePlots(RooWorkspace *_wspace) {
     frame->Draw();
     TPaveText pt(0.6, 0.7, 0.88, 0.88, "blNDC");
     PlotPaveText(pt, _wspace, frame);
-//pt.Draw();
+    // pt.Draw();
 
     c1->SaveAs(m_figname);
     this->GenerateCxx(_wspace, frame);
@@ -389,7 +387,8 @@ void QuickFit::MakePlots(RooWorkspace *_wspace) {
 
 
 void QuickFit::GenerateCxx(RooWorkspace *_wspace, RooPlot* frame) {
-    system("echo 'make plot'");
+    // system("echo 'make plot'");
+    cout << "Info:: generate one script to plot fit resutl" << endl;
     TString outcxx = "plot_" + m_sigpdfName + ".cxx";
     TString com1 = "cat ";
     com1 += QuickPath"/test/plot_test.cxx >" + outcxx;
@@ -397,7 +396,8 @@ void QuickFit::GenerateCxx(RooWorkspace *_wspace, RooPlot* frame) {
     // cout << com1 << endl;
     system("sed -i 's/SigPdfName/" + m_sigpdfName + "/g' " + outcxx);
     system("sed -i 's/output.root/" + m_output + "/g' " + outcxx);
-    // cout << "sed -i 's/SigPdfName/" + m_sigpdfName + "/g' " + outcxx << endl;
+    // cout << "sed -i 's/SigPdfName/" + m_sigpdfName + "/g' " + outcxx 
+    // << endl;
 
     system("sed -i 's/val/" + m_branch + "/g' " + outcxx);
     system("sed -i 's/m_sigpdfName/" + m_sigpdfName + "/g' " + outcxx);
@@ -410,7 +410,8 @@ void QuickFit::GenerateCxx(RooWorkspace *_wspace, RooPlot* frame) {
     calculateChisq(frame, chisq, ndf);
     // system("sed -i 's/chisq/" + to_string(chisq) + "/g' " + outcxx);
     // system("sed -i 's/ndf/" + to_string(ndf) + "/g' " + outcxx);
-    // cout << "sed -i 's/chisq/" + to_string(chisq) + "/g' " + outcxx << endl;
+    // cout << "sed -i 's/chisq/" + to_string(chisq) + "/g' " + outcxx 
+    // << endl;
     // cout << "sed -i 's/ndf/" + to_string(ndf) + "/g' " + outcxx << endl;
 
     double mean[2], sigma[2];
@@ -610,9 +611,9 @@ void QuickFit::calculateChisq(RooPlot* frame,
         }
     }
     double tx[1000]={0};
-    double tx_err[1000]={0};
+    // double tx_err[1000]={0};
     double ty[1000]={0};
-    double chi_err[1000]={0};
+    // double chi_err[1000]={0};
     double chisq = 0;
 
     for (int tk = 0; tk != histo->GetN(); tk++) {
@@ -682,8 +683,8 @@ void QuickFit::getSigmaAndMean(RooWorkspace *_wspace, double *_mean,
     _mean[1] = h1.GetRMS();
     _sigma[0] = h2.GetMean();
     _sigma[1] = h2.GetRMS();
-    delete Means;
-    delete Sigmas;
+    delete [] Means;
+    delete [] Sigmas;
 
     return;
 }
@@ -697,4 +698,6 @@ void QuickFit::SetBins(int n) {
 double QuickFit::Chisq(RooAbsPdf *totFit, RooAbsData *data) {
     std::vector<double>  ndata, nfit;
     //this->CheckMin(ndata, nfit, 10);
+    return 0;
 }
+
