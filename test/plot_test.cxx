@@ -110,8 +110,8 @@ void SetStyle() {
     // Margins for labels etc.
     gStyle->SetPadLeftMargin(0.25);
     gStyle->SetPadBottomMargin(0.25);
-    gStyle->SetPadRightMargin(0.12);
-    gStyle->SetPadTopMargin(0.12);
+    gStyle->SetPadRightMargin(0.02);
+    gStyle->SetPadTopMargin(0.05);
     // No error bars in x direction
     gStyle->SetErrorX(0);
     // PlotFormat legend
@@ -149,6 +149,9 @@ void plot_SigPdfName() {
     frame->SetMinimum(0.0001);
     FormatAxis(frame->GetXaxis());
     FormatAxis(frame->GetYaxis());
+    TGaxis* xaxis = (TGaxis*)frame->GetYaxis();
+    xaxis->SetMaxDigits(3);
+
     frame->GetYaxis()->SetTitleOffset(1.2);
     frame->Draw();
 
