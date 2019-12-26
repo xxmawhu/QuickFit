@@ -203,12 +203,12 @@ void plot_SigPdfName() {
     sprintf(par_sigma, "#sigma = %.3e #pm %.3e", sigma, sigmaErr);
     TString unit = "m_unit";
     if (unit == "GeV") {
-        sprintf(par_mean, "mean= %7.4f #pm %1.4f GeV", mean, meanErr);
-        sprintf(par_sigma, "#sigma= %4.4f #pm %1.4f GeV", sigma, sigmaErr);
+        sprintf(par_mean, "mean=%.4f#pm%.4f GeV", mean, meanErr);
+        sprintf(par_sigma, "#sigma=%.4f#pm%.4f GeV", sigma, sigmaErr);
     } else if (unit == "MeV") {
-        sprintf(par_mean, "mean= %7.4f #pm %1.4f MeV", 1000 * mean,
+        sprintf(par_mean, "mean=%.4f#pm%.4f MeV", 1000 * mean,
                 1000 * meanErr);
-        sprintf(par_sigma, "#sigma= %4.4f #pm %1.4f MeV", 1000 * sigma,
+        sprintf(par_sigma, "#sigma=%.4f#pm%.4f MeV", 1000 * sigma,
                 1000 * sigmaErr);
     }
     pt->AddText(par_chi);
@@ -216,7 +216,6 @@ void plot_SigPdfName() {
     pt->AddText(par_nbkg);
     pt->AddText(par_mean);
     pt->AddText(par_sigma);
-
     pt->Draw();
 
     c1->Print("cname.eps");
