@@ -71,10 +71,10 @@ void PlotFormat::SetStyle()
     // White BG
     gStyle->SetPadColor(10);
     // Margins for labels etc.
-    gStyle->SetPadLeftMargin(0.25);
-    gStyle->SetPadBottomMargin(0.25);
-    gStyle->SetPadRightMargin(0.12);
-    gStyle->SetPadTopMargin(0.12);
+    gStyle->SetPadLeftMargin(0.15);
+    gStyle->SetPadBottomMargin(0.15);
+    gStyle->SetPadRightMargin(0.10);
+    gStyle->SetPadTopMargin(0.10);
     // No error bars in x direction
     gStyle->SetErrorX(0);
     // PlotFormat legend

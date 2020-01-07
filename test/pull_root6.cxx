@@ -22,7 +22,7 @@ void fit(TString inputFile, double xLow,
          TString figName);
 void pull_root6() {
     // use the function fit
-    fit("f.root", -5E-4, 0., "#Delta A_{CP}", "afit.eps");
+    fit("f.root", -8E-4, 4e-4, "A_{CP}", "afit.eps");
 }
 void fit(TString inputFile = "val/alpha.root", double xLow = -8e-3,
          double xHigh = 4e-3, TString xtitle = "#alpha_{J#psi}",

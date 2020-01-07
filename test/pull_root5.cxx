@@ -16,8 +16,8 @@
 using std::map;
 using std::string;
 using namespace RooFit;
-void fit(TString inputFile = "val/alpha.root", double xLow = -8e-3,
-         double xHigh = 4e-3, TString xtitle = "#alpha_{J#psi}",
+void fit(TString inputFile = "val/alpha.root", double xLow = -12e-3,
+         double xHigh = 8e-3, TString xtitle = "#alpha_{J#psi}",
          TString figName = "fig/alpha.eps") {
     QuickFit quickFit(inputFile, "sig", "val");
     quickFit.SetSignalPDF("gauss", 1);
@@ -34,5 +34,5 @@ void fit(TString inputFile = "val/alpha.root", double xLow = -8e-3,
 }
 void pull_root5() { 
     gSystem->Load("../lib/libSimpleFit.so");
-    fit("f.root", -5E-4, 0., "#Delta A_{CP}", "afit.eps"); 
+    fit("f.root", -8E-4, 4e-4, "A_{CP}", "afit.eps");
 }
