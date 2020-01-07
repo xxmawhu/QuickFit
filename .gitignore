@@ -1,3 +1,7 @@
 lib/
 tmp/
 inc/currentPath.hh
+.*
+test/Example.root
+test/afit.eps
+test/plot_toyFit.cxx

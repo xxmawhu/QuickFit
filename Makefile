@@ -179,10 +179,10 @@ shlib: $(SHLIBFILE)
 endif
 
 clean:
-	rm -f $(WORKDIR)
-	rm -f $(LIBFILE)
-	rm -f $(SHLIBFILE)
-	rm -f $(ROOTMAPFILE)
+	/bin/rm -rf $(WORKDIR)
+	/bin/rm -f $(LIBFILE)
+	/bin/rm -f $(SHLIBFILE)
+	/bin/rm -f $(ROOTMAPFILE)
 
 
 .PHONY : shlib lib default clean
