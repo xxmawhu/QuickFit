@@ -120,7 +120,7 @@ DLIST:=$(patsubst %.cc,%.d,$(addprefix $(DEPDIR)/,$(notdir $(CCLIST))))
 # Implicit rule making all dependency Makefiles included at the end of this makefile
 $(DEPDIR)/%.d: $(SRCDIR)/%.cc
 	@echo "Making $@"
-	@sh setup.sh
+	@bash setup.sh
 	@mkdir -p $(DEPDIR)
 	@set -e; $(CXX) $(MFLAGS) $(CXXFLAGS) $< \
 	          | sed 's#\($(notdir $*)\)\.o[ :]*#$(OBJDIR)/\1.o $@ : #g' > $@; \
