@@ -11,20 +11,19 @@
 #ifndef __CINT__
 //#include "RooGlobalFunc.h"
 #endif
-
 #include "RooRealVar.h"
-#include "RooAbsReal.h"
+// #include "RooAbsReal.h"
 #include "RooDataSet.h"
 #include "RooDataHist.h"
 #include "RooCurve.h"
 #include "RooHist.h"
-#include "RooCBShape.h"
+// #include "RooCBShape.h"
 #include "RooGaussian.h"
 #include "RooChebychev.h"
-#include "RooConstVar.h"
-#include "RooProdPdf.h"
+// #include "RooConstVar.h"
+// #include "RooProdPdf.h"
 #include "RooAddPdf.h"
-#include "RooPolynomial.h"
+// #include "RooPolynomial.h"
 #include "TString.h"
 #include "TCanvas.h"
 #include "TAxis.h"
@@ -535,7 +534,7 @@ void QuickFit::PlotTitle(RooWorkspace *_wspace, RooPlot *frame) {
     return;
 }
 void QuickFit::Export(RooWorkspace *_wspace) {
-    RooRealVar *x = _wspace->var(m_branch);
+    // RooRealVar *x = _wspace->var(m_branch);
     RooAbsPdf *sigpdf = (RooAbsPdf*) _wspace->pdf(m_sigpdfName);
     RooAbsPdf *model = (RooAbsPdf*) _wspace->pdf("model");
     RooAbsPdf *bkgpdf = (RooAbsPdf*) _wspace->pdf("bkgpdf");
