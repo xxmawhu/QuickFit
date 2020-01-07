@@ -179,7 +179,7 @@ shlib: $(SHLIBFILE)
 endif
 
 clean:
-	rm -rf $(WORKDIR)
+	rm -f $(WORKDIR)
 	rm -f $(LIBFILE)
 	rm -f $(SHLIBFILE)
 	rm -f $(ROOTMAPFILE)
