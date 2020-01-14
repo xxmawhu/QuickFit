@@ -1,36 +1,38 @@
-#<===<===<===<===<===<===<===<===<===~===>===>===>===>===>===>===>===>===>
-## File Name:    Makefile
-## Author:       Hao-Kai SUN
-## Authors:      Thomas Latham, John Back, Paul Harrison
-## Created:      2020-01-12 Sun 20:28:15 CST
-## <<=====================================>>
-## Last Updated: 2020-01-14 Tue 19:07:48 CST
-##           By: Hao-Kai SUN
-##     Update #: 159
-## <<======== COPYRIGHT && LICENSE =======>>
-##
-## Copyright University of Warwick 2004 - 2013.
-## Copyright © 2020 SUN Hao-Kai <spin.hk@outlook.com>. All rights reserved.
-##
-## This program is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or (at
-## your option) any later version.
-##
-## This program is distributed in the hope that it will be useful, but
-## WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-## General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
-##
-## ============================== CODES ==============================>>>
-# Set Library/Binary information --------------------------------
-PACKAGE=QuickFit
-SONAME=lib$(PACKAGE).so
+ ##########################################################################
+ # Copyright University of Warwick 2004 - 2013.                           #
+ # Distributed under the Boost Software License, Version 1.0.             #
+ # (See accompanying file LICENSE_1_0.txt or copy at                      #
+ # http://www.boost.org/LICENSE_1_0.txt)                                  #
+ #                                                                        #
+ # Authors:                                                               #
+ # Thomas Latham                                                          #
+ # John Back                                                              #
+ # Paul Harrison                                                          #
+ #                                                                        #
+ # -------------------------------                                        #
+ # Standalone Makefile for Laura++                                        #
+ # -------------------------------                                        #
+ #                                                                        #
+ # Instructions                                                           #
+ #     - Review 'external configuration' section below                    #
+ #       to match systems compilers setup                                 #
+ #                                                                        #
+ #     - Make sure the ROOTSYS environment variable is set and points     #
+ #       to your ROOT release or the root-config script is in your PATH   #
+ #                                                                        #
+ #     - run 'make <target>'                                              #
+ #                                                                        #
+ # Build targets                                                          #
+ #   lib   - make libLaura++.a                                            #
+ #   shlib - make libLaura++.so (default)                                 #
+ #   clean - delete all intermediate and final build objects              #
+ #                                                                        #
+ ##########################################################################
 
-# Check whether ROOTSYS is defined ------------------------------
+
+# --- External configuration ----------------------------------
+
+# first check that ROOTSYS is defined
 ifndef ROOTSYS
   ROOTSYS := $(shell root-config --prefix)
   ROOTBINDIR := $(shell root-config --bindir)
@@ -45,148 +47,144 @@ ROOTCONFIG  := $(ROOTBINDIR)/root-config
 ARCH        := $(shell $(ROOTCONFIG) --arch)
 PLATFORM    := $(shell $(ROOTCONFIG) --platform)
 ROOTVERSION := $(shell $(ROOTCONFIG) --version | awk -F. '{print $$1}')
-## Check ROOT version
-ifeq ($(ROOTVERSION),5)
-	$(error ROOT version used: $(ROOTVERSION)! Please use the latest!)
-endif
 ROOTLIBD    := $(shell $(ROOTCONFIG) --libdir)
 
-# Directory structure -------------------------------------------
-INC_DIR = inc
-SRC_DIR = src
-
-WORK_DIR = tmp
-DEP_DIR=$(WORK_DIR)/dep
-OBJ_DIR=$(WORK_DIR)/obj
-
-LIB_DIR = lib
-BIN_DIR = bin
-
+INCLUDES =
+SRCDIR   = src
+INCDIR   = inc
+LIBDIR   = lib
+WORKDIR  = tmp
+# By default, don't build the LauRooFitSlave class since it depends on RooFit
+# and we don't want to pull in that library if we don't have to.
+# If you want to build it, just set the SKIPLIST variable to be empty.
 SKIPLIST = LauRooFitSlave
 
-ROOTINC = $(shell $(ROOTCONFIG) --incdir)
-INCLUDES = -I$(ROOTINC) -I$(INC_DIR)
-
-# Compilers and Flags ------------------------------------------
-CXX = g++
-
-DEBUGFLAGS = -Wall -Wextra -Wshadow -Woverloaded-virtual -g -Og -fPIC
-OPTFLAGS = -march=native -O2 -pipe -m64 -fPIC -fno-plt -std=c++17
-ifeq (debug,$(findstring debug,$(BUILDTYPE)))
-	BUILDFLAGS = $(DEBUGFLAGS)
-else
-	BUILDFLAGS = $(OPTFLAGS)
+ifeq ($(findstring linux, $(ARCH)),linux)
+# This set here should work for Linux.
+CXX      = g++
+LD       = g++
+CXXFLAGS = -g -O2 -Wall -Wextra -Wshadow -Woverloaded-virtual -w -fPIC
+MFLAGS   = -MM
+LDFLAGS  = -shared
 endif
 
-ROOTCFLAGS = $(shell $(ROOTCONFIG) --cflags)
-CXXFLAGS = $(ROOTCFLAGS) $(BUILDFLAGS) $(INCLUDES)
-# CXXFLAGS = $(ROOTCFLAGS) $(BUILDFLAGS)
-# CXXFLAGS = -g -O2 -Wall -Wextra -Wshadow -Woverloaded-virtual -w -fPIC
-ROOTLIBS = $(shell $(ROOTCONFIG) --libs --glibs)
-CXXLIBS = $(ROOTLIBS) -lCore -lEG -lHist -lMathCore -lMatrix -lNet -lRIO -lTree -lRooFit -lRooFitCore -lRooStats -lMinuit -lFoam -lGpad
-MFLAGS = -MM
+ifeq ($(ARCH),macosx64)
+# This set here should work for MacOSX.
+CXX      = g++
+LD       = g++
+#CXXFLAGS = -g -O3 -Wall -Wextra -Wshadow -Woverloaded-virtual -w -fPIC
+CXXFLAGS = -g -O3 -Wall -Wextra -Wshadow -Woverloaded-virtual -fPIC
+MFLAGS   = -MM
+LDFLAGS  = -dynamiclib -single_module -undefined dynamic_lookup
+endif
 
-# Linker and Flags ---------------------------------------------
-LD = g++
-ROOTLDFLAGS = $(shell $(ROOTCONFIG) --ldflags)
-LDFLAGS = $(ROOTLDFLAGS) -rdynamic -shared -fPIC
-BINLDFLAGS = $(ROOTLDFLAGS) -fPIC
+# --- Internal configuration ----------------------------------
+PACKAGE=SimpleFit
+DEPDIR=$(WORKDIR)/dependencies
+OBJDIR=$(WORKDIR)/objects
 
-CINTFILE  = $(WORK_DIR)/$(PACKAGE)Cint.cc
-CINTOBJ   = $(OBJ_DIR)/$(PACKAGE)Cint.o
-LIBFILE   = $(LIB_DIR)/lib$(PACKAGE).a
-SHLIBFILE = $(LIB_DIR)/$(SONAME)
+INCLUDES += -I$(INCDIR)
+CXXFLAGS += $(INCLUDES)
+CXXFLAGS += $(shell $(ROOTCONFIG) --cflags)
+LDFLAGS  += $(shell $(ROOTCONFIG) --ldflags)
+CINTFILE  = $(WORKDIR)/$(PACKAGE)Cint.cc
+CINTOBJ   = $(OBJDIR)/$(PACKAGE)Cint.o
+LIBFILE   = $(LIBDIR)/lib$(PACKAGE).a
+SHLIBFILE = $(LIBDIR)/lib$(PACKAGE).so
 ROOTMAPFILE = $(patsubst %.so,%.rootmap,$(SHLIBFILE))
 
-# Collect list of files ----------------------------------------
-## List of all header files
-HHLIST:=$(filter-out $(addprefix $(INC_DIR)/, $(addsuffix .hh, $(SKIPLIST))),$(wildcard $(INC_DIR)/*.hh))
+ROOTLIBS = libCore.so libEG.so libHist.so libMathCore.so libMatrix.so libNet.so libRIO.so libTree.so
+SHLIBOPTS = -ldl -Wl,--as-needed,-L$(ROOTLIBD),-lCore,-lEG,-lHist,-lMathCore,-lMatrix,-lNet,-lRIO,-lTree
+SHLIBOPTS += -lRooFitCore -lRooFit -lGpad
+DEFINES =
+ifeq ($(strip $(SKIPLIST)),)
+	ROOTLIBS += libRooFitCore.so libRooFit.so
+	DEFINES += -DDOLAUROOFITSLAVE
+	SHLIBOPTS += -lRooFitCore -lRooFit
+endif
 
-## List of all source files to build
-CCLIST:=$(filter-out $(addprefix $(SRC_DIR)/, $(addsuffix .cc, $(SKIPLIST))),$(wildcard $(SRC_DIR)/*.cc))
+default: shlib
 
-## List of all source files that contain main functions
-BINCCLIST:=$(shell egrep -l "^[[:space:]]*int[[:space:]]*main\>" $(CCLIST))
+# List of all header files
+HHLIST:=$(filter-out $(addprefix $(INCDIR)/, $(addsuffix .hh, $(SKIPLIST))),$(wildcard $(INCDIR)/*.hh))
 
-## List of all source files to be compiled into the library
-LIBCCLIST:=$(filter-out $(BINCCLIST), $(CCLIST))
+# List of all source files to build
+CCLIST:=$(filter-out $(addprefix $(SRCDIR)/, $(addsuffix .cc, $(SKIPLIST))),$(wildcard $(SRCDIR)/*.cc))
 
-## List of all object files to build
-OOLIST:=$(patsubst %.cc,%.o,$(addprefix $(OBJ_DIR)/,$(notdir $(CCLIST))))
+# List of all object files to build
+OLIST:=$(patsubst %.cc,%.o,$(addprefix $(OBJDIR)/,$(notdir $(CCLIST))))
 
-## List of all object files to build
-LOLIST:=$(patsubst %.cc,%.o,$(addprefix $(OBJ_DIR)/,$(notdir $(LIBCCLIST))))
+# List of all dependency files to make
+DLIST:=$(patsubst %.cc,%.d,$(addprefix $(DEPDIR)/,$(notdir $(CCLIST))))
 
-## List of all dependency files to make
-DDLIST:=$(patsubst %.cc,%.d,$(addprefix $(DEP_DIR)/,$(notdir $(CCLIST))))
-
-## List of all binary files to make
-BINLIST:=$(patsubst %.cc,%,$(notdir $(BINCCLIST)))
-
-# Makefile Rules -----------------------------------------------
-.PHONY: lib shlib bin clean all
-
-all: lib shlib bin
-
-## Implicit rule making all dependency Makefiles
-## included at the end of this makefile
-$(DEP_DIR)/%.d: $(SRC_DIR)/%.cc
+# Implicit rule making all dependency Makefiles included at the end of this makefile
+$(DEPDIR)/%.d: $(SRCDIR)/%.cc
 	@echo "Making $@"
 	@bash setup.sh
-	@mkdir -pv $(DEP_DIR)
+	@mkdir -p $(DEPDIR)
 	@set -e; $(CXX) $(MFLAGS) $(CXXFLAGS) $< \
-	          | sed 's#\($(notdir $*)\)\.o[ :]*#$(OBJ_DIR)/\1.o $@ : #g' > $@; \
+	          | sed 's#\($(notdir $*)\)\.o[ :]*#$(OBJDIR)/\1.o $@ : #g' > $@; \
 	        [ -s $@ ] || rm -f $@
 
-## Implicit rule to compile all classes
-$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cc
+# Implicit rule to compile all classes
+$(OBJDIR)/%.o : $(SRCDIR)/%.cc
 	@echo "Compiling $<"
-	@mkdir -pv $(OBJ_DIR)
+	@mkdir -p $(OBJDIR)
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
-## Rule to make ROOTCINT output file
-$(CINTOBJ) : $(HHLIST) $(INC_DIR)/$(PACKAGE)_LinkDef.h
-	@mkdir -pv $(OBJ_DIR)
-	@mkdir -pv $(LIB_DIR)
+# Rule to make ROOTCINT output file
+$(CINTOBJ): $(HHLIST) $(INCDIR)/$(PACKAGE)_LinkDef.h
+	@mkdir -p $(OBJDIR)
+	@mkdir -p $(LIBDIR)
+ifeq ($(ROOTVERSION),5)
+	@echo "Running rootcint"
+	@$(ROOTBINDIR)/rootcint -f $(CINTFILE) -c $(INCLUDES) $(DEFINES) $(notdir $(HHLIST)) $(INCDIR)/$(PACKAGE)_LinkDef.h
+else
 	@echo "Running rootcling"
-	@$(ROOTBINDIR)/rootcling -f $(CINTFILE) -s $(SHLIBFILE) -rml $(SHLIBFILE) $(addprefix -rml , $(ROOTLIBS)) -rmf $(ROOTMAPFILE) -I$(PWD)/$(INC_DIR) $(notdir $(HHLIST)) $(INC_DIR)/$(PACKAGE)_LinkDef.h
+	@$(ROOTBINDIR)/rootcling -f $(CINTFILE) -s $(SHLIBFILE) -rml $(SHLIBFILE) $(addprefix -rml , $(ROOTLIBS)) -rmf $(ROOTMAPFILE) -I$(PWD)/$(INCDIR) $(DEFINES) $(notdir $(HHLIST)) $(INCDIR)/$(PACKAGE)_LinkDef.h
+endif
 	@echo "Compiling $(CINTFILE)"
 	@$(CXX) $(CXXFLAGS) -c $(CINTFILE) -o $(CINTOBJ)
 
-## Rule to combine objects into a library
-$(LIBFILE) : $(LOLIST) $(CINTOBJ)
+# Rule to combine objects into a library
+$(LIBFILE): $(OLIST) $(CINTOBJ)
 	@echo "Making $(LIBFILE)"
-	@mkdir -p $(LIB_DIR)
+	@mkdir -p $(LIBDIR)
 	@rm -f $(LIBFILE)
-	@ar rcs $(LIBFILE) $(LOLIST) $(CINTOBJ)
+	@ar rcs $(LIBFILE) $(OLIST) $(CINTOBJ)
 
-## Rule to combine objects into a shared library
-$(SHLIBFILE) : $(LOLIST) $(CINTOBJ)
+# Rule to combine objects into a shared library
+$(SHLIBFILE): $(OLIST) $(CINTOBJ)
 	@echo "Making $(SHLIBFILE)"
-	@mkdir -p $(LIB_DIR)
+	@mkdir -p $(LIBDIR)
 	@rm -f $(SHLIBFILE)
-	@$(CXX) $(LOLIST) $(CINTOBJ) $(LDFLAGS) $(CXXLIBS) -o $(SHLIBFILE)
+	@$(CXX) $(OLIST) $(CINTOBJ) $(LDFLAGS) $(SHLIBOPTS) -o $(SHLIBFILE)
 
-## Useful build targets
+ifeq ($(ROOTVERSION),5)
+# Rule to create rootmap file
+$(ROOTMAPFILE): $(SHLIBFILE)
+	@echo "Making $(ROOTMAPFILE)"
+	@mkdir -p $(LIBDIR)
+	@rm -f $(ROOTMAPFILE)
+	@rlibmap -f -o $(ROOTMAPFILE) -l $(SHLIBFILE) -d $(ROOTLIBS) -c $(INCDIR)/$(PACKAGE)_LinkDef.h
+endif
+
+# Useful build targets
 lib: $(LIBFILE)
 
+ifeq ($(ROOTVERSION),5)
+shlib: $(SHLIBFILE) $(ROOTMAPFILE)
+else
 shlib: $(SHLIBFILE)
-
-## Rule to compile all binaries
-%: $(OBJ_DIR)/%.o $(CINTOBJ) $(SHLIBFILE)
-	@mkdir -p $(BIN_DIR)
-	@echo "Linking $@"
-	@$(CXX) $(BINLDFLAGS) $< -o $(BIN_DIR)/$@ $(CINTOBJ) $(SHLIBFILE) $(CXXLIBS)
-
-bin: $(BINLIST)
+endif
 
 clean:
-	@rm -rvf $(WORK_DIR)
-	@rm -vf $(LIBFILE)
-	@rm -vf $(SHLIBFILE)
-	@rm -vf $(BINLIST)
-	@rm -vf $(ROOTMAPFILE)
+	/bin/rm -rf $(WORKDIR)
+	/bin/rm -f $(LIBFILE)
+	/bin/rm -f $(SHLIBFILE)
+	/bin/rm -f $(ROOTMAPFILE)
 
--include $(DDLIST)
-#===================================================================<<<
-#========================= Makefile ends here =========================
+
+.PHONY : shlib lib default clean
+
+-include $(DLIST)
