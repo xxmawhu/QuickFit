@@ -4,9 +4,9 @@
 ## Authors:      Thomas Latham, John Back, Paul Harrison
 ## Created:      2020-01-12 Sun 20:28:15 CST
 ## <<=====================================>>
-## Last Updated: 2020-01-14 Tue 19:07:48 CST
+## Last Updated: 2020-01-14 Tue 20:18:39 CST
 ##           By: Hao-Kai SUN
-##     Update #: 159
+##     Update #: 163
 ## <<======== COPYRIGHT && LICENSE =======>>
 ##
 ## Copyright University of Warwick 2004 - 2013.
@@ -70,8 +70,8 @@ INCLUDES = -I$(ROOTINC) -I$(INC_DIR)
 # Compilers and Flags ------------------------------------------
 CXX = g++
 
-DEBUGFLAGS = -Wall -Wextra -Wshadow -Woverloaded-virtual -g -Og -fPIC
-OPTFLAGS = -march=native -O2 -pipe -m64 -fPIC -fno-plt -std=c++17
+DEBUGFLAGS = -Wall -Wextra -Wshadow -Woverloaded-virtual -Wpedantic -fexceptions -g3 -Og -ggdb -fPIC
+OPTFLAGS = -march=native -O2 -pipe -m64 -fPIC -fno-plt -fstack-protector-strong -std=c++17 -pthread
 ifeq (debug,$(findstring debug,$(BUILDTYPE)))
 	BUILDFLAGS = $(DEBUGFLAGS)
 else
